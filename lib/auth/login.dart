@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_authentication/auth/signup.dart';
+import 'package:flutter_authentication/home/home.dart';
+
+import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -46,9 +49,23 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 30.0,
             ),
             ElevatedButton(
-              onPressed: () {
-                print(
-                    'Email: ${_emailController.text}, Password: ${_passwordController.text}');
+              onPressed: () async {
+                final message = await AuthService().login(
+                  email: _emailController.text,
+                  password: _passwordController.text,
+                );
+                if (message!.contains('Success')) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(
+                      builder: (context) => Home(email: _emailController.text),
+                    ),
+                  );
+                }
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                  ),
+                );
               },
               child: const Text('Login'),
             ),
